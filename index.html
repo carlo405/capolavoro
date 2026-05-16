@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>I Miei Film</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+  /* Colori del sito */
+  :root {
+    --sfondo:      #0d0d0f;
+    --superficie:  #17171a;
+    --superficie2: #1f1f24;
+    --bordo:       rgba(255,255,255,0.08);
+    --bordo2:      rgba(255,255,255,0.14);
+    --testo:       #f0ede8;
+    --grigio:      #7a7a85;
+    --oro:         #c9a96e;
+    --oro-chiaro:  #e8c98a;
+    --rosso:       #e05252;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'DM Sans', sans-serif; background: var(--sfondo); color: var(--testo); }
+
+  /* Intestazione */
+  intestazione { display: block; text-align: center; padding: 48px 16px 32px; }
+  intestazione h1 { font-family: 'DM Serif Display', serif; font-size: 48px; }
+  intestazione h1 span { color: var(--oro); font-style: italic; }
+  intestazione p { color: var(--grigio); font-size: 13px; margin-top: 6px; letter-spacing: 2px; text-transform: uppercase; }
+  intestazione::after { content: ''; display: block; width: 60px; height: 2px; background: var(--oro); margin: 16px auto 0; }
+
+  /* Contenitore centrale */
+  .contenitore { max-width: 680px; margin: 0 auto; padding: 0 20px 64px; }
+
+  /* Riquadro form */
+  .riquadro-form { background: var(--superficie); border: 1px solid var(--bordo); border-radius: 14px; padding: 24px; margin-bottom: 32px; }
+
+  /* Due colonne affiancate */
+  .riga-form { display: flex; gap: 10px; margin-bottom: 10px; }
+  .riga-form input  { width: 50%; }
+  .riga-form select { width: 50%; }
+
+  /* Campi testo e menu */
+  input, select { padding: 11px 14px; background: var(--superficie2); border: 1px solid var(--bordo); border-radius: 8px; color: var(--testo); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+  input:focus, select:focus { border-color: var(--oro); }
+  input::placeholder { color: var(--grigio); }
+  select option { background: var(--superficie2); }
+
+  /* Bottone aggiungi */
+  .bottone-aggiungi { width: 100%; padding: 11px; background: var(--oro); color: #0d0d0f; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .bottone-aggiungi:hover { background: var(--oro-chiaro); }
+
+  /* Barra filtri */
+  .barra-filtri { display: none; gap: 7px; flex-wrap: wrap; margin-bottom: 28px; }
+  .bottone-filtro { padding: 6px 15px; border-radius: 20px; border: 1px solid var(--bordo2); background: transparent; color: var(--grigio); font-size: 12px; cursor: pointer; }
+  .bottone-filtro:hover { color: var(--testo); border-color: var(--oro); }
+  .bottone-filtro.attivo { background: var(--oro); color: #0d0d0f; border-color: var(--oro); font-weight: 600; }
+
+  /* Etichetta sezione */
+  .etichetta-sezione { font-size: 10px; font-weight: 600; color: var(--grigio); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .etichetta-sezione::after { content: ''; flex: 1; height: 1px; background: var(--bordo); }
+
+  /* Lista e scheda film */
+  .lista-film { display: flex; flex-direction: column; gap: 8px; }
+  .scheda-film { background: var(--superficie); border: 1px solid var(--bordo); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 13px; animation: entrata 250ms ease; }
+  .scheda-film:hover { border-color: var(--bordo2); background: var(--superficie2); }
+
+  @keyframes entrata {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Cerchio spunta */
+  .cerchio { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--bordo2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .cerchio:hover { border-color: var(--oro); }
+  .cerchio.visto { background: var(--oro); border-color: var(--oro); }
+  .cerchio span { display: none; font-size: 11px; color: #0d0d0f; font-weight: 700; }
+  .cerchio.visto span { display: block; }
+
+  /* Info film */
+  .info-film { flex: 1; min-width: 0; }
+  .titolo { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .titolo.barrato { text-decoration: line-through; color: var(--grigio); }
+  .riga-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+
+  /* Etichettina genere */
+  .etichetta-genere { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(201,169,110,0.25); color: var(--oro); }
+
+  /* Stelline */
+  .stelline { display: flex; gap: 3px; }
+  .stella { background: none; border: none; font-size: 15px; color: #3a3a42; cursor: pointer; }
+  .stella.accesa { color: var(--oro-chiaro); }
+  .stelline:hover .stella { color: var(--oro-chiaro); }
+  .stelline:hover .stella:hover ~ .stella { color: #3a3a42; }
+
+  /* Bottone elimina */
+  .bottone-elimina { background: none; border: none; color: var(--grigio); font-size: 14px; cursor: pointer; padding: 4px 6px; border-radius: 6px; flex-shrink: 0; }
+  .bottone-elimina:hover { color: var(--rosso); }
+
+  /* Sezione visti e messaggio vuoto */
+  .sezione-visti { margin-top: 32px; }
+  .messaggio-vuoto { text-align: center; padding: 32px; color: var(--grigio); font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<intestazione>
+  <h1>I miei <span>film</span></h1>
+  <p>La tua lista personale</p>
+</intestazione>
+
+<div class="contenitore">
+
+  <!-- Form aggiunta film -->
+  <div class="riquadro-form">
+    <div class="riga-form">
+      <input type="text" id="campotitolo" placeholder="Titolo del film…">
+      <select id="campogenere">
+        <option value="">Seleziona genere</option>
+        <option>Azione</option>
+        <option>Avventura</option>
+        <option>Animazione</option>
+        <option>Commedia</option>
+        <option>Drammatico</option>
+        <option>Fantasy</option>
+        <option>Horror</option>
+        <option>Romantico</option>
+        <option>Sci-Fi</option>
+        <option>Thriller</option>
+      </select>
+    </div>
+    <button class="bottone-aggiungi" onclick="aggiungiFilm()">+ Aggiungi film</button>
+  </div>
+
+  <!-- Barra filtri genere -->
+  <div class="barra-filtri" id="barraFiltri"></div>
+
+  <!-- Lista da vedere -->
+  <div class="etichetta-sezione" id="etichettaDaVedere">Da vedere</div>
+  <div class="lista-film" id="listaDaVedere"></div>
+
+  <!-- Lista già visti -->
+  <div class="sezione-visti" id="sezioneVisti" style="display:none">
+    <div class="etichetta-sezione">Già visti</div>
+    <div class="lista-film" id="listaVisti"></div>
+  </div>
+
+  <!-- Messaggio quando non ci sono film -->
+  <div class="messaggio-vuoto" id="messaggioVuoto">🎬 Aggiungi il tuo primo film!</div>
+
+</div>
+
+<script>
+
+  var elencoFilm  = [];   // array con tutti i film
+  var filtroAttivo = "tutti"; // filtro genere attivo
+  var prossimoId  = 1;    // id progressivo per ogni nuovo film
+
+
+  // ---- AGGIUNGI UN FILM ----
+  function aggiungiFilm() {
+    var titolo = document.getElementById("campotitolo").value;
+    var genere = document.getElementById("campogenere").value;
+
+    if (titolo == "" || genere == "") {
+      return;
+    }
+
+    var nuovoFilm = {
+      id:     prossimoId,
+      titolo: titolo,
+      genere: genere,
+      visto:  false,
+      voto:   0
+    };
+
+    elencoFilm[elencoFilm.length] = nuovoFilm;
+    prossimoId = prossimoId + 1;
+
+    document.getElementById("campotitolo").value = "";
+    document.getElementById("campogenere").value = "";
+
+    aggiornaPagina();
+  }
+
+
+  // ---- SEGNA / DESEGNA COME VISTO ----
+  function toggleVisto(id) {
+    for (var i = 0; i < elencoFilm.length; i++) {
+      if (elencoFilm[i].id == id) {
+        if (elencoFilm[i].visto == true) {
+          elencoFilm[i].visto = false;
+          elencoFilm[i].voto  = 0;
+        } else {
+          elencoFilm[i].visto = true;
+        }
+      }
+    }
+    aggiornaPagina();
+  }
+
+
+  // ---- VOTA UN FILM ----
+  function votaFilm(id, stelle) {
+    for (var i = 0; i < elencoFilm.length; i++) {
+      if (elencoFilm[i].id == id) {
+        if (elencoFilm[i].voto == stelle) {
+          elencoFilm[i].voto = 0;
+        } else {
+          elencoFilm[i].voto = stelle;
+        }
+      }
+    }
+    aggiornaPagina();
+  }
+
+
+  // ---- ELIMINA UN FILM ----
+  function eliminaFilm(id) {
+    var nuovoArray = [];
+    for (var i = 0; i < elencoFilm.length; i++) {
+      if (elencoFilm[i].id != id) {
+        nuovoArray[nuovoArray.length] = elencoFilm[i];
+      }
+    }
+    elencoFilm = nuovoArray;
+    aggiornaPagina();
+  }
+
+
+  // ---- COSTRUISCE LA SCHEDA HTML DI UN FILM ----
+  function costruisciScheda(film) {
+
+    // Classe del cerchio
+    var classeCerchio = "cerchio";
+    if (film.visto == true) {
+      classeCerchio = "cerchio visto";
+    }
+
+    // Classe del titolo
+    var classeTitolo = "titolo";
+    if (film.visto == true) {
+      classeTitolo = "titolo barrato";
+    }
+
+    // Stelline (solo se il film è visto)
+    var htmlStelline = "";
+    if (film.visto == true) {
+      htmlStelline = "<div class='stelline'>";
+      for (var s = 1; s <= 5; s++) {
+        var classeSt = "stella";
+        if (s <= film.voto) {
+          classeSt = "stella accesa";
+        }
+        htmlStelline = htmlStelline + "<button class='" + classeSt + "' onclick='votaFilm(" + film.id + "," + s + ")'>★</button>";
+      }
+      htmlStelline = htmlStelline + "</div>";
+    }
+
+    // Scheda completa con i backtick (più leggibile)
+    return `
+      <div class="scheda-film">
+        <div class="${classeCerchio}" onclick="toggleVisto(${film.id})">
+          <span>✓</span>
+        </div>
+        <div class="info-film">
+          <div class="${classeTitolo}">${film.titolo}</div>
+          <div class="riga-meta">
+            <span class="etichetta-genere">${film.genere}</span>
+            ${htmlStelline}
+          </div>
+        </div>
+        <button class="bottone-elimina" onclick="eliminaFilm(${film.id})">✕</button>
+      </div>
+    `;
+  }
+
+
+  // ---- AGGIORNA TUTTA LA PAGINA ----
+  function aggiornaPagina() {
+
+    document.getElementById("listaDaVedere").innerHTML = "";
+    document.getElementById("listaVisti").innerHTML    = "";
+
+    var contaDaVedere = 0;
+    var contaVisti    = 0;
+
+    for (var i = 0; i < elencoFilm.length; i++) {
+      var film = elencoFilm[i];
+
+      if (filtroAttivo != "tutti" && film.genere != filtroAttivo) {
+        continue;
+      }
+
+      if (film.visto == true) {
+        document.getElementById("listaVisti").innerHTML += costruisciScheda(film);
+        contaVisti = contaVisti + 1;
+      } else {
+        document.getElementById("listaDaVedere").innerHTML += costruisciScheda(film);
+        contaDaVedere = contaDaVedere + 1;
+      }
+    }
+
+    // Mostra/nasconde le sezioni
+    mostraONascondi("etichettaDaVedere", contaDaVedere > 0);
+    mostraONascondi("sezioneVisti",      contaVisti    > 0);
+    mostraONascondi("messaggioVuoto",    elencoFilm.length == 0);
+    mostraONascondi("barraFiltri",       elencoFilm.length  > 0);
+
+    aggiornaBarra();
+  }
+
+
+  // ---- MOSTRA O NASCONDE UN ELEMENTO ----
+  // "id" è il nome dell'elemento, "visibile" è true o false
+  function mostraONascondi(id, visibile) {
+    if (visibile == true) {
+      document.getElementById(id).style.display = "block";
+    } else {
+      document.getElementById(id).style.display = "none";
+    }
+  }
+
+
+  // ---- AGGIORNA LA BARRA FILTRI ----
+  function aggiornaBarra() {
+    var barra = document.getElementById("barraFiltri");
+    barra.innerHTML = "";
+
+    // Raccogliamo i generi senza ripetizioni
+    var generiTrovati = [];
+    for (var i = 0; i < elencoFilm.length; i++) {
+      var genere     = elencoFilm[i].genere;
+      var giaPresente = false;
+      for (var j = 0; j < generiTrovati.length; j++) {
+        if (generiTrovati[j] == genere) {
+          giaPresente = true;
+        }
+      }
+      if (giaPresente == false) {
+        generiTrovati[generiTrovati.length] = genere;
+      }
+    }
+
+    // Bottone "Tutti"
+    var classeTutti = "bottone-filtro";
+    if (filtroAttivo == "tutti") {
+      classeTutti = "bottone-filtro attivo";
+    }
+    barra.innerHTML += "<button class='" + classeTutti + "' onclick='impostaFiltro(\"tutti\")'>Tutti</button>";
+
+    // Un bottone per ogni genere trovato
+    for (var i = 0; i < generiTrovati.length; i++) {
+      var g = generiTrovati[i];
+      var classeBottone = "bottone-filtro";
+      if (filtroAttivo == g) {
+        classeBottone = "bottone-filtro attivo";
+      }
+      barra.innerHTML += "<button class='" + classeBottone + "' onclick='impostaFiltro(\"" + g + "\")'>" + g + "</button>";
+    }
+  }
+
+
+  // ---- IMPOSTA IL FILTRO ----
+  function impostaFiltro(genere) {
+    filtroAttivo = genere;
+    aggiornaPagina();
+  }
+
+
+  // Premendo Invio nel campo titolo si aggiunge il film
+  document.getElementById("campotitolo").onkeydown = function(evento) {
+    if (evento.key == "Enter") {
+      aggiungiFilm();
+    }
+  };
+
+  aggiornaPagina();
+
+</script>
+</body>
+</html>
